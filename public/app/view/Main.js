@@ -27,7 +27,7 @@ Ext.define('Diesel.view.Main', {
                 ].join("")
             },
             {
-                title: 'Get Started',
+                title: 'Easter Egg',
                 iconCls: 'action',
 
                 items: [
