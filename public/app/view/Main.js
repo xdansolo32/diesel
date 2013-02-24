@@ -19,13 +19,11 @@ Ext.define('Diesel.view.Main', {
                 items: {
                     docked: 'top',
                     xtype: 'titlebar',
-                    title: 'Welcome to Sencha Touch 2'
+                    title: 'Welcome to DIESEL'
                 },
 
                 html: [
-                    "You've just generated a new Sencha Touch 2 project. What you're looking at right now is the ",
-                    "contents of <a target='_blank' href=\"app/view/Main.js\">app/view/Main.js</a> - edit that file ",
-                    "and refresh to change what's rendered here."
+                    "Changing the text so we dont look like huge ass noobs"
                 ].join("")
             },
             {
@@ -36,15 +34,23 @@ Ext.define('Diesel.view.Main', {
                     {
                         docked: 'top',
                         xtype: 'titlebar',
-                        title: 'Getting Started'
+                        title: 'Rollin like Rick'
                     },
                     {
-                        xtype: 'video',
-                        url: 'http://av.vimeo.com/64284/137/87347327.mp4?token=1330978144_f9b698fea38cd408d52a2393240c896c',
-                        posterUrl: 'http://b.vimeocdn.com/ts/261/062/261062119_640.jpg'
+                        // xtype: 'video',
+//                         url: 'http://www.youtube.com/watch?v=okqEVeNqBhc',
+//                         autoResume: true
+						html: '<iframe width="640" height="480" src="http://www.youtube.com/embed/okqEVeNqBhc" frameborder="0" allowfullscreen></iframe>'
+
                     }
                 ]
-            }
+            },
+			{
+				title: 'Facebook',
+				items: [{
+					xtype: 'button'
+				}]
+			}
         ]
     }
 });
