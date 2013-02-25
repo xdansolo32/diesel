@@ -47,9 +47,16 @@ Ext.define('Diesel.view.Main', {
             },
 			{
 				title: 'Facebook',
-				items: [{
-					xtype: 'button'
-				}]
+				items: [
+					{
+						xtype: 'button',
+						text: 'FBCALL',
+						ui: 'confirm',
+						handler: function(){
+							console.log('put FB crap in here!!');
+						}
+					}	
+				]
 			}
         ]
     }

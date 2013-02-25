@@ -40,10 +40,7 @@ Ext.application({
 
         // Initialize the main view
         Ext.Viewport.add(Ext.create('Diesel.view.Main'));
-        // Ext.create('Ext.Panel', {
-//             fullscreen: true,
-//             htmlcd: 'Hello World!'
-//         });
+        
     },
 
     onUpdated: function() {
