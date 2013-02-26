@@ -10,7 +10,7 @@
 	"jade":   "0.28.1",
 	"mongoose":   "3.5.7",
     "passport": "0.1.15",
-	"passport-facebook": "0.1.5",
+	"passport-facebook": "0.1.5"
   },
 
   "engines": {

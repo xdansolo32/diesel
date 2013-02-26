@@ -1,0 +1,129 @@
+passport.use(new FacebookStrategy({
+    clientID: FACEBOOK_APP_ID,
+    clientSecret: FACEBOOK_APP_SECRET,
+    callbackURL: "http://localhost:3000/auth/facebook/callback"
+  },
+  function(accessToken, refreshToken, profile, done) {
+    User.findOrCreate(..., function(err, user) {
+      if (err) { return done(err); }
+      done(null, user);
+    });
+  }
+));
+
+// Redirect the user to Facebook for authentication.  When complete,
+// Facebook will redirect the user back to the application at
+//     /auth/facebook/callback
+app.get('/auth/facebook', passport.authenticate('facebook'));
+
+// Facebook will redirect the user to this URL after approval.  Finish the
+// authentication process by attempting to obtain an access token.  If
+// access was granted, the user will be logged in.  Otherwise,
+// authentication has failed.
+
+app.get('/auth/facebook/callback',
+  passport.authenticate('facebook', { failureRedirect: '/login' }),
+  function(req, res) {
+    // Successful authentication, redirect home.
+    res.redirect('/');
+  });
+
+
+
+function render_page(req, res) {
+  req.facebook.app(function(app) {
+    req.facebook.me(function(user) {
+      res.render('index.ejs', {
+        layout:    false,
+        req:       req,
+        app:       app,
+        user:      user
+      });
+    });
+  });
+}
+
+function handle_facebook_request(req, res) {
+
+  // if the user is logged in
+  if (req.facebook.token) {
+	  /*  // WE should do the below to clean up our JS and make debugging easier
+	  async.parallel({
+		  getMahFriends: function(cb) {
+		  	
+		  }
+	  })
+	  */
+    async.parallel([
+      function(cb) {
+        // query 4 friends and send them to the socket for this socket id
+        req.facebook.get('/me/friends', { limit: 4 }, function(friends) {
+          req.friends = friends;
+          cb();
+        });
+      },
+      function(cb) {
+        // query 16 photos and send them to the socket for this socket id
+        req.facebook.get('/me/photos', { limit: 16 }, function(photos) {
+          req.photos = photos;
+          cb();
+        });
+      },
+      function(cb) {
+        // query 4 likes and send them to the socket for this socket id
+        req.facebook.get('/me/likes', { limit: 4 }, function(likes) {
+          req.likes = likes;
+          cb();
+        });
+      },
+      function(cb) {
+        // use fql to get a list of my friends that are using this app
+        req.facebook.fql('SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1', function(result) {
+          req.friends_using_app = result;
+          cb();
+        });
+      }
+    ], function() {
+      render_page(req, res);
+    });
+
+  } else {
+    render_page(req, res);
+  }
+}
+
+// show friends
+app.get('/friends', function(req, res) {
+  req.facebook.get('/me/friends', { limit: 4 }, function(friends) {
+    res.send('friends: ' + require('util').inspect(friends));
+  });
+});
+
+// use fql to show my friends using this app
+app.get('/friends_using_app', function(req, res) {
+  req.facebook.fql('SELECT uid, name, is_app_user, pic_square FROM user WHERE uid in (SELECT uid2 FROM friend WHERE uid1 = me()) AND is_app_user = 1', function(friends_using_app) {
+    res.send('friends using app: ' + require('util').inspect(friends_using_app));
+  });
+});
+
+// perform multiple fql queries at once
+app.get('/multiquery', function(req, res) {
+  req.facebook.fql({
+    likes: 'SELECT user_id, object_id, post_id FROM like WHERE user_id=me()',
+    albums: 'SELECT object_id, cover_object_id, name FROM album WHERE owner=me()',
+  },
+  function(result) {
+    var inspect = require('util').inspect;
+    res.send('Yor likes: ' + inspect(result.likes) + ', your albums: ' + inspect(result.albums) );
+  });
+});
+
+// See the full signed request details
+app.get('/signed_request', function(req, res) {
+  res.send('Signed Request details: ' + require('util').inspect(req.facebook.signed_request));
+});
+
+
+app.get('/', handle_facebook_request);
+app.post('/', handle_facebook_request);
+render_page();
