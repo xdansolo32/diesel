@@ -24,6 +24,7 @@ Ext.define('Diesel.view.Main', {
 
                 html: [
                     "Changing the text so we dont look like huge ass noobs"
+
                 ].join("")
             },
             {
